@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { Link } from "react-router-dom";
 
 const Cart = ({ cartItems, items }) => {
   let cartItemDetails = [];
@@ -127,9 +128,11 @@ const Cart = ({ cartItems, items }) => {
               justifyContent="center"
               sx={{ marginBottom: "20px" }}
             >
-              <Button variant="outlined" color="info">
-                Check out
-              </Button>
+              <Link to="/order">
+                <Button variant="outlined" color="info">
+                    Check out
+                </Button>
+              </Link>
             </Stack>
           </Box>
         </Grid>
