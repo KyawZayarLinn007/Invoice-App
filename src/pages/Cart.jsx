@@ -127,7 +127,7 @@ const Cart = ({ cartItems, items }) => {
               justifyContent="center"
               sx={{ marginBottom: "20px" }}
             >
-              <Button variant="outlined" color="error">
+              <Button variant="outlined" color="info">
                 Check out
               </Button>
             </Stack>

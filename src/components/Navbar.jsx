@@ -78,7 +78,7 @@ function Navbar(props) {
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
             <Link to="/cart">
-              <IconButton aria-label="cart" size="large" color="error">
+              <IconButton aria-label="cart" size="large" color="info">
                 <Badge badgeContent={props.cartItems.length} color="primary">
                   <ShoppingCartIcon />
                 </Badge>
