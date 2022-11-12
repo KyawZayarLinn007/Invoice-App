@@ -8,8 +8,10 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Link } from "react-router-dom";
 import produce from "immer";
+import { useNavigate } from "react-router-dom";
 
 const Cart = ({ cartItems, setCartItems }) => {
+  let navigate = useNavigate();
   console.log(
     cartItems.reduce((pre, curr) => {
       return pre?.price * pre?.qty + curr?.price * curr?.qty;
@@ -36,6 +38,17 @@ const Cart = ({ cartItems, setCartItems }) => {
     })
     console.log(`The nextState is`, nextState);
     setCartItems(nextState);
+  }
+
+  const handleClearCart = () => {
+    setCartItems([]);
+  }
+
+  const handleCheckOut = () => {
+    if(cartItems.length >= 1){
+      navigate("/order");
+      setCartItems([]);
+    }
   }
 
   return (
@@ -156,13 +169,14 @@ const Cart = ({ cartItems, setCartItems }) => {
             <Stack
               direction="row"
               justifyContent="center"
-              sx={{ marginBottom: "20px" }}
+              sx={{ marginBottom: "20px", marginTop: "50px" }}
             >
-              <Link to="/order">
-                <Button variant="outlined" color="info">
-                  Check out
-                </Button>
-              </Link>
+              <Button variant="contained" color="primary" sx={{marginRight: "10px"}} onClick={handleCheckOut}>
+                Check out
+              </Button>
+              <Button variant="contained" color="error" onClick={handleClearCart}>
+                Clear cart
+              </Button>
             </Stack>
           </Box>
         </Grid>
