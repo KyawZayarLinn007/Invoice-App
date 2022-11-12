@@ -7,12 +7,36 @@ import IconButton from "@mui/material/IconButton";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Link } from "react-router-dom";
+import produce from "immer";
 
-const Cart = ({ cartItems, items }) => {
+const Cart = ({ cartItems, setCartItems }) => {
+  console.log(
+    cartItems.reduce((pre, curr) => {
+      return pre?.price * pre?.qty + curr?.price * curr?.qty;
+    }, 0)
+  );
 
-  console.log(cartItems.reduce((pre, curr) => {
-    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
-  }, 0));
+  const handleReduceQty = (id) => {
+    let nextState = produce(cartItems, draftState => {
+      let state = draftState.find(item => item.id == id);
+      if(state.qty >= 1){
+        state.qty--;
+      }
+    })
+    console.log(`The nextState is`, nextState);
+    setCartItems(nextState);
+  }
+
+  const handleAddQty = (id) => {
+    let nextState = produce(cartItems, draftState => {
+      let state = draftState.find(item => item.id == id);
+      if(state.qty >= 0){
+        state.qty++;
+      }
+    })
+    console.log(`The nextState is`, nextState);
+    setCartItems(nextState);
+  }
 
   return (
     // wrapper stack
@@ -41,11 +65,17 @@ const Cart = ({ cartItems, items }) => {
                       aria-label="reduce"
                       color="warning"
                       size="small"
+                      onClick={() => handleReduceQty(item.id)}
                     >
                       <RemoveCircleOutlineIcon />
                     </IconButton>
                     <Typography variant="body1">{item.qty}</Typography>
-                    <IconButton aria-label="add" color="warning" size="small">
+                    <IconButton
+                      aria-label="add"
+                      color="warning"
+                      size="small"
+                      onClick={() => handleAddQty(item.id)}
+                    >
                       <AddCircleOutlineIcon />
                     </IconButton>
                   </Stack>
@@ -53,29 +83,6 @@ const Cart = ({ cartItems, items }) => {
               </Stack>
             ))
           )}
-
-          {/* item row */}
-          {/* <Stack
-            direction="row"
-            justifyContent="space-around"
-            sx={{ marginBottom: "40px" }}
-          >
-            <div>
-              <Typography variant="h5">Coca Cola</Typography>
-              <Typography variant="body1">800 mmks</Typography>
-            </div>
-            <div>
-              <Stack direction="row" alignItems="center" spacing={2}>
-                <IconButton aria-label="reduce" color="warning" size="small">
-                  <RemoveCircleOutlineIcon />
-                </IconButton>
-                <Typography variant="body1">1</Typography>
-                <IconButton aria-label="add" color="warning" size="small">
-                  <AddCircleOutlineIcon />
-                </IconButton>
-              </Stack>
-            </div>
-          </Stack> */}
         </Grid>
 
         {/* checkout form grid */}
@@ -97,13 +104,22 @@ const Cart = ({ cartItems, items }) => {
             >
               <Typography variant="h6">Subtotal</Typography>
               <Typography variant="h6">
-                {
-                  cartItems.length > 1 ? (cartItems.reduce((pre, curr) => {
-                    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
-                  }) || 0) : (cartItems.length == 1 && cartItems.reduce((pre, curr) => {
-                    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
-                  }, {price: 0, qty: 0}) || 0)
-                } mmks </Typography>
+                {cartItems.length > 1
+                  ? cartItems.reduce((pre, curr) => {
+                      return pre?.price * pre?.qty + curr?.price * curr?.qty;
+                    }) || 0
+                  : (cartItems.length == 1 &&
+                      cartItems.reduce(
+                        (pre, curr) => {
+                          return (
+                            pre?.price * pre?.qty + curr?.price * curr?.qty
+                          );
+                        },
+                        { price: 0, qty: 0 }
+                      )) ||
+                    0}{" "}
+                mmks{" "}
+              </Typography>
             </Stack>
             <Stack
               direction="row"
@@ -120,13 +136,22 @@ const Cart = ({ cartItems, items }) => {
             >
               <Typography variant="h6">Total</Typography>
               <Typography variant="h6">
-              {
-                  cartItems.length > 1 ? (cartItems.reduce((pre, curr) => {
-                    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
-                  }) || 0) : (cartItems.length == 1 && cartItems.reduce((pre, curr) => {
-                    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
-                  }, {price: 0, qty: 0}) || 0)
-                } mmks </Typography>
+                {cartItems.length > 1
+                  ? cartItems.reduce((pre, curr) => {
+                      return pre?.price * pre?.qty + curr?.price * curr?.qty;
+                    }) || 0
+                  : (cartItems.length == 1 &&
+                      cartItems.reduce(
+                        (pre, curr) => {
+                          return (
+                            pre?.price * pre?.qty + curr?.price * curr?.qty
+                          );
+                        },
+                        { price: 0, qty: 0 }
+                      )) ||
+                    0}{" "}
+                mmks{" "}
+              </Typography>
             </Stack>
             <Stack
               direction="row"
@@ -135,7 +160,7 @@ const Cart = ({ cartItems, items }) => {
             >
               <Link to="/order">
                 <Button variant="outlined" color="info">
-                    Check out
+                  Check out
                 </Button>
               </Link>
             </Stack>
