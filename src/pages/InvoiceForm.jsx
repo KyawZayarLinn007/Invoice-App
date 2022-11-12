@@ -17,8 +17,22 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormHelperText from "@mui/material/FormHelperText";
 import { Link } from "react-router-dom";
 import produce from "immer";
+import { v4 as uuidv4 } from "uuid";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "../firebase/firebase-config.js";
+import { useNavigate } from "react-router-dom";
 
 const InvoiceForm = ({ items, setItems }) => {
+  const invoicesCollectionRef = collection(db, "invoices");
+  let navigate = useNavigate();
+
   // select item field state
   const [selectItem, setSelectItem] = React.useState("");
   const [tax, setTax] = React.useState(0);
@@ -97,20 +111,55 @@ const InvoiceForm = ({ items, setItems }) => {
     setSelectedItems(filteredSelectedItems);
   };
 
+  const handleCreateInvoice = () => {
+    let name = document.querySelector("#invoice-name").value || uuidv4();
+    let total = document.querySelector("#selected-item-total").dataset
+      .selectedTotal;
+    let tax_value = tax || 0;
+
+    let item_ids = [];
+    document.querySelectorAll("#selected-item-id").forEach((item) => {
+      console.log(item);
+      item_ids.push(item.value);
+    });
+
+    let qtys = [];
+    document.querySelectorAll("#selected-item-qty").forEach((item) => {
+      console.log(item);
+      qtys.push(item.value);
+    });
+
+    let data = {
+      name,
+      tax: Number(tax_value),
+      total: Number(total),
+      tems: item_ids,
+      qtys,
+    };
+
+    addDoc(invoicesCollectionRef, data)
+    .then(data => {
+      navigate("/invoices");
+    })
+    
+    console.log(total, name, tax_value, item_ids, qtys);
+  };
+
   const calculateSubTotal = () => {
     return selectedItems.reduce((pre, curr) => pre + curr.total, 0) || 0;
-  }
+  };
 
   const calculateTotal = () => {
-    return Math.round((calculateSubTotal() - (calculateSubTotal() * (tax / 100))) || 0);
-  }
+    return Math.round(
+      calculateSubTotal() - calculateSubTotal() * (tax / 100) || 0
+    );
+  };
 
   return (
     <>
       {/* wrapper */}
       <Stack direction="row" justifyContent="center">
         <Box sx={{ width: "80%" }}>
-
           {/* main grid container */}
           <Grid container spacing={16}>
             {/* items grid */}
@@ -118,6 +167,7 @@ const InvoiceForm = ({ items, setItems }) => {
               {/* name field */}
               <Stack>
                 <TextField
+                  id="invoice-name"
                   color="success"
                   label="Invoice Name"
                   variant="standard"
@@ -128,13 +178,14 @@ const InvoiceForm = ({ items, setItems }) => {
 
               {/* selected item div */}
               {selectedItems.map((selectedItem) => (
-                <Grid
-                  spacing={4}
-                  container
-                  sx={{ marginBottom: "40px" }}
-                >
+                <Grid spacing={4} container sx={{ marginBottom: "40px" }}>
                   <Grid item xs={3} md={4}>
                     <Typography variant="h6">{selectedItem.name}</Typography>
+                    <input
+                      type="hidden"
+                      id="selected-item-id"
+                      value={selectedItem.id}
+                    />
                     <Typography variant="body2">
                       {selectedItem.price} mmks
                     </Typography>
@@ -152,6 +203,11 @@ const InvoiceForm = ({ items, setItems }) => {
                       <Typography variant="body1">
                         {selectedItem.qty}
                       </Typography>
+                      <input
+                        type="hidden"
+                        id="selected-item-qty"
+                        value={selectedItem.qty}
+                      />
                       <IconButton
                         aria-label="add"
                         color="warning"
@@ -225,7 +281,9 @@ const InvoiceForm = ({ items, setItems }) => {
               {/* subtotal field */}
               <Stack sx={{ marginBottom: "40px" }}>
                 <Typography variant="h6">Subtotal</Typography>
-                <Typography variant="body2">{calculateSubTotal()} mmks</Typography>
+                <Typography variant="body2">
+                  {calculateSubTotal()} mmks
+                </Typography>
               </Stack>
 
               {/* tax field */}
@@ -246,7 +304,7 @@ const InvoiceForm = ({ items, setItems }) => {
                     inputProps={{
                       "aria-label": "weight",
                       min: 0,
-                      style: {textAlign: "center"}
+                      style: { textAlign: "center" },
                     }}
                   />
                   <FormHelperText id="standard-weight-helper-text">
@@ -258,7 +316,13 @@ const InvoiceForm = ({ items, setItems }) => {
               {/* total field */}
               <Stack sx={{ marginBottom: "80px" }}>
                 <Typography variant="h6">Total</Typography>
-                <Typography variant="body2">{calculateTotal()} mmks</Typography>
+                <Typography
+                  variant="body2"
+                  id="selected-item-total"
+                  data-selected-total={calculateTotal()}
+                >
+                  {calculateTotal()} mmks
+                </Typography>
               </Stack>
 
               {/* btns */}
@@ -276,6 +340,7 @@ const InvoiceForm = ({ items, setItems }) => {
                   variant="contained"
                   endIcon={<AddIcon />}
                   color="success"
+                  onClick={handleCreateInvoice}
                 >
                   Create
                 </Button>
