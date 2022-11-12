@@ -35,6 +35,7 @@ const InvoiceForm = ({ items, setItems }) => {
 
   // select item field state
   const [selectItem, setSelectItem] = React.useState("");
+  //tax field state
   const [tax, setTax] = React.useState(0);
 
   //selected items state
@@ -51,7 +52,7 @@ const InvoiceForm = ({ items, setItems }) => {
     setSelectItem(event.target.value);
   };
 
-  // select item field onchange
+  // tax field onchange
   const handleTaxChange = (event) => {
     setTax(event.target.value);
   };
