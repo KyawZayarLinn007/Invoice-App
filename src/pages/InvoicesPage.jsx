@@ -28,6 +28,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/firebase-config.js";
 import { CSVLink } from "react-csv";
+import { Link } from "react-router-dom";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -160,6 +161,15 @@ export default function InvoicesPage({ invoices, setInvoices }) {
     data: invoices,
   };
 
+  const handleDeleteInvoice = (id) => {
+    const deleteInvoice = async (id) => {
+        const invoiceDoc = doc(db, "invoices", id);
+        let value = await deleteDoc(invoiceDoc);
+        console.log(`The deleted value is`, value);
+    };
+    deleteInvoice(id);
+  }
+
   React.useEffect(() => {
     const getInvoices = async () => {
       const data = await getDocs(invoicesCollectionRef);
@@ -170,16 +180,6 @@ export default function InvoicesPage({ invoices, setInvoices }) {
   }, []);
 
   console.log("The fetched invoices is", invoices);
-
-  //   const handleAddCart = (id) => {
-  //     let cartIds = cartItems.map(item => item.id);
-  //     let filtered_item = items.find(item => item.id == id);
-  //     filtered_item.qty = 1;
-
-  //     if(!cartIds.includes(id)){
-  //         setCartItems([...cartItems, filtered_item]);
-  //     }
-  //   }
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -238,13 +238,15 @@ export default function InvoicesPage({ invoices, setInvoices }) {
         justifyContent="space-between"
         sx={{ marginLeft: "10%", marginRight: "10%", marginBottom: "20px" }}
       >
-        <Button
-          variant="contained"
-          color="success"
-          endIcon={<AddIcon />}
-        >
-          Create
-        </Button>
+        <Link to="/create">
+            <Button
+            variant="contained"
+            color="success"
+            endIcon={<AddIcon />}
+            >
+            Create
+            </Button>
+        </Link>
         <CSVLink {...csvReport}>
           <Button
             variant="contained"
@@ -308,7 +310,7 @@ export default function InvoicesPage({ invoices, setInvoices }) {
                             <IconButton color="success">
                               <EditIcon />
                             </IconButton>
-                            <IconButton color="error">
+                            <IconButton color="error" onClick={() => handleDeleteInvoice(invoice.id)}>
                               <DeleteForeverIcon />
                             </IconButton>
                           </TableCell>
