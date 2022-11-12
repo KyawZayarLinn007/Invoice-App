@@ -12,6 +12,7 @@ import Box from '@mui/material/Box';
 const App = () => {
   const [cartItems, setCartItems] = React.useState([]);
   const [items, setItems] = React.useState([]);
+  const [invoices, setInvoices] = React.useState([]);
 
   return ( 
     <div>
@@ -23,7 +24,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<ItemsPage items={items} setItems={setItems} cartItems={cartItems} setCartItems={setCartItems} />} />
         <Route path="/items" element={<ItemsPage items={items} setItems={setItems} cartItems={cartItems} setCartItems={setCartItems} />} />
-        <Route path="/invoices" element={<InvoicesPage />} />
+        <Route path="/invoices" element={<InvoicesPage invoices={invoices} setInvoices={setInvoices} />} />
         <Route path="/create" element={<InvoiceForm />} />
         <Route path="/cart" element={<Cart cartItems={cartItems} setCartItems={setCartItems} items={items} />} />
         <Route path="/order" element={<Order />} />
