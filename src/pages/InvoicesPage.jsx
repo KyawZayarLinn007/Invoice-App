@@ -1,6 +1,7 @@
 import * as React from "react";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -11,13 +12,18 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { visuallyHidden } from "@mui/utils";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
 import {
   collection,
   getDocs,
@@ -138,6 +144,11 @@ EnhancedTableHead.propTypes = {
   rowCount: PropTypes.number.isRequired,
 };
 
+// dialog transition
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 export default function InvoicesPage({ invoices, setInvoices }) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -146,6 +157,14 @@ export default function InvoicesPage({ invoices, setInvoices }) {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const invoicesCollectionRef = collection(db, "invoices");
+
+  //delete open state
+  const [dopen, setDOpen] = React.useState(false);
+
+  //deleteId state
+  const [deleteId, setDeleteId] = React.useState(null);
+
+  console.log(`The deleteId state is`, deleteId);
 
   // csv options
   let headers = [
@@ -161,14 +180,14 @@ export default function InvoicesPage({ invoices, setInvoices }) {
     data: invoices,
   };
 
-  const handleDeleteInvoice = (id) => {
+  const handleDeleteInvoice = () => {
     const deleteInvoice = async (id) => {
-        const invoiceDoc = doc(db, "invoices", id);
-        let value = await deleteDoc(invoiceDoc);
-        console.log(`The deleted value is`, value);
+      const invoiceDoc = doc(db, "invoices", id);
+      let value = await deleteDoc(invoiceDoc);
+      console.log(`The deleted value is`, value);
     };
     deleteInvoice(id);
-  }
+  };
 
   React.useEffect(() => {
     const getInvoices = async () => {
@@ -231,21 +250,47 @@ export default function InvoicesPage({ invoices, setInvoices }) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
+  const handleClickDeleteOpen = (id) => {
+    setDOpen(true);
+    setDeleteId(id);
+  };
+
+  const handleDeleteClose = () => {
+    setDOpen(false);
+  };
+
   return (
     <>
+      {/* delete dialog */}
+      <Dialog
+        fullWidth={true}
+        open={dopen}
+        onClose={handleDeleteClose}
+        TransitionComponent={Transition}
+      >
+        <DialogTitle>Delete invoice</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            This invoice will be deleted forever! Are you sure to continue this
+            operation?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteClose}>Cancel</Button>
+          <Button onClick={handleDeleteInvoice} color="error">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Stack
         direction="row"
         justifyContent="space-between"
         sx={{ marginLeft: "10%", marginRight: "10%", marginBottom: "20px" }}
       >
         <Link to="/create">
-            <Button
-            variant="contained"
-            color="success"
-            endIcon={<AddIcon />}
-            >
+          <Button variant="contained" color="success" endIcon={<AddIcon />}>
             Create
-            </Button>
+          </Button>
         </Link>
         <CSVLink {...csvReport}>
           <Button
@@ -310,7 +355,12 @@ export default function InvoicesPage({ invoices, setInvoices }) {
                             <IconButton color="success">
                               <EditIcon />
                             </IconButton>
-                            <IconButton color="error" onClick={() => handleDeleteInvoice(invoice.id)}>
+                            <IconButton
+                              color="error"
+                              onClick={() => {
+                                handleClickDeleteOpen(invoice.id);
+                              }}
+                            >
                               <DeleteForeverIcon />
                             </IconButton>
                           </TableCell>
