@@ -128,19 +128,19 @@ const InvoiceForm = ({ items, setItems }) => {
 
               {/* selected item div */}
               {selectedItems.map((selectedItem) => (
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
+                <Grid
+                  spacing={4}
+                  container
                   sx={{ marginBottom: "40px" }}
                 >
-                  <div>
+                  <Grid item xs={3} md={4}>
                     <Typography variant="h6">{selectedItem.name}</Typography>
                     <Typography variant="body2">
                       {selectedItem.price} mmks
                     </Typography>
-                  </div>
-                  <div>
-                    <Stack direction="row" alignItems="center" spacing={2}>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
                       <IconButton
                         aria-label="reduce"
                         color="warning"
@@ -161,14 +161,14 @@ const InvoiceForm = ({ items, setItems }) => {
                         <AddCircleOutlineIcon />
                       </IconButton>
                     </Stack>
-                  </div>
-                  <div>
+                  </Grid>
+                  <Grid item xs={3} md={3}>
                     <Typography variant="h6">Total</Typography>
                     <Typography variant="body2">
                       {selectedItem.total} mmks
                     </Typography>
-                  </div>
-                  <div>
+                  </Grid>
+                  <Grid item xs={3} md={2}>
                     <IconButton
                       aria-label="remove"
                       color="error"
@@ -177,8 +177,8 @@ const InvoiceForm = ({ items, setItems }) => {
                     >
                       <DeleteIcon />
                     </IconButton>
-                  </div>
-                </Stack>
+                  </Grid>
+                </Grid>
               ))}
 
               {/* item select */}
@@ -231,6 +231,7 @@ const InvoiceForm = ({ items, setItems }) => {
               {/* tax field */}
               <Stack>
                 <FormControl
+                  className="tax-field"
                   sx={{ width: "70%", marginBottom: "40px" }}
                   color="success"
                 >

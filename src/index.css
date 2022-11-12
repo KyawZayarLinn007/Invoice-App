@@ -10,3 +10,9 @@ a{
 .nav-links{
   color: #fff
 }
+
+@media only screen and (max-width: 900px) {
+  .tax-field{
+    width: 50% !important
+  }
+}
