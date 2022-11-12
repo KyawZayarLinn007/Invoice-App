@@ -15,6 +15,7 @@ import FormControl from "@mui/material/FormControl";
 import Input from "@mui/material/Input";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormHelperText from "@mui/material/FormHelperText";
+import { Link } from "react-router-dom";
 
 const InvoiceForm = () => {
   const [age, setAge] = React.useState("");
@@ -203,9 +204,11 @@ const InvoiceForm = () => {
 
               {/* btns */}
               <Stack sx={{ marginBottom: "40px" }} direction="row" spacing={4}>
-                <Button variant="contained" endIcon={<KeyboardBackspaceIcon />} color="success">
-                  Back
-                </Button>
+                <Link to="/invoices">
+                  <Button variant="contained" endIcon={<KeyboardBackspaceIcon />} color="success">
+                    Back
+                  </Button>
+                </Link>
                 <Button variant="contained" endIcon={<AddIcon />} color="success">
                   Create
                 </Button>

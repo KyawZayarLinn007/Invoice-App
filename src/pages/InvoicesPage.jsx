@@ -186,7 +186,15 @@ export default function InvoicesPage({ invoices, setInvoices }) {
       let value = await deleteDoc(invoiceDoc);
       console.log(`The deleted value is`, value);
     };
-    deleteInvoice(id);
+    deleteInvoice(deleteId);
+
+    const getInvoices= async () => {
+      const data = await getDocs(invoicesCollectionRef);
+      setInvoices(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+
+    getInvoices();
+    setDOpen(false)
   };
 
   React.useEffect(() => {
