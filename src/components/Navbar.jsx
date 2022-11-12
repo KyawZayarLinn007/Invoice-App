@@ -16,6 +16,8 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { NavLink } from "react-router-dom";
+import { borderRadius, fontSize } from "@mui/system";
 
 const drawerWidth = 240;
 const navItems = ["items", "invoices"];
@@ -58,6 +60,10 @@ function Navbar(props) {
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
+  let activeStyle = {
+    textDecoration: "underline"
+  };
+
   return (
     <>
       {/* <Box sx={{ display: 'flex' }}> */}
@@ -87,12 +93,16 @@ function Navbar(props) {
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navItems.map((item) => (
-              <Link
-                key={item}
-                to={item}
-              >
-                <Button sx={{ color: "#fff" }}>{item}</Button>
-              </Link>
+              <Button>
+                <NavLink
+                  key={item}
+                  to={item}
+                  className="nav-links"
+                  style={({ isActive }) => (isActive ? activeStyle : undefined)}
+                >
+                  {item}
+                </NavLink>
+              </Button>
             ))}
           </Box>
         </Toolbar>

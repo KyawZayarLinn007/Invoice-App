@@ -21,7 +21,7 @@ const App = () => {
         sx={{marginTop: "50px"}}
       />
       <Routes>
-        <Route path="/" element={<ItemsPage />} />
+        <Route path="/" element={<ItemsPage items={items} setItems={setItems} cartItems={cartItems} setCartItems={setCartItems} />} />
         <Route path="/items" element={<ItemsPage items={items} setItems={setItems} cartItems={cartItems} setCartItems={setCartItems} />} />
         <Route path="/invoices" element={<InvoicesPage />} />
         <Route path="/create" element={<InvoiceForm />} />
