@@ -13,8 +13,8 @@ import { useNavigate } from "react-router-dom";
 const Cart = ({ cartItems, setCartItems }) => {
   let navigate = useNavigate();
   console.log(
-    cartItems.reduce((pre, curr) => {
-      return pre?.price * pre?.qty + curr?.price * curr?.qty;
+    cartItems?.reduce((pre, curr) => {
+      return pre + curr?.price * curr?.qty;
     }, 0)
   );
 
@@ -117,20 +117,11 @@ const Cart = ({ cartItems, setCartItems }) => {
             >
               <Typography variant="h6">Subtotal</Typography>
               <Typography variant="h6">
-                {cartItems.length > 1
-                  ? cartItems.reduce((pre, curr) => {
-                      return pre?.price * pre?.qty + curr?.price * curr?.qty;
-                    }) || 0
-                  : (cartItems.length == 1 &&
-                      cartItems.reduce(
-                        (pre, curr) => {
-                          return (
-                            pre?.price * pre?.qty + curr?.price * curr?.qty
-                          );
-                        },
-                        { price: 0, qty: 0 }
-                      )) ||
-                    0}{" "}
+                {
+                  cartItems?.reduce((pre, curr) => {
+                    return pre + curr?.price * curr?.qty;
+                  }, 0)
+                }{" "}
                 mmks{" "}
               </Typography>
             </Stack>
@@ -149,20 +140,11 @@ const Cart = ({ cartItems, setCartItems }) => {
             >
               <Typography variant="h6">Total</Typography>
               <Typography variant="h6">
-                {cartItems.length > 1
-                  ? cartItems.reduce((pre, curr) => {
-                      return pre?.price * pre?.qty + curr?.price * curr?.qty;
-                    }) || 0
-                  : (cartItems.length == 1 &&
-                      cartItems.reduce(
-                        (pre, curr) => {
-                          return (
-                            pre?.price * pre?.qty + curr?.price * curr?.qty
-                          );
-                        },
-                        { price: 0, qty: 0 }
-                      )) ||
-                    0}{" "}
+              {
+                  cartItems?.reduce((pre, curr) => {
+                    return pre + curr?.price * curr?.qty;
+                  }, 0)
+                }{" "}
                 mmks{" "}
               </Typography>
             </Stack>
