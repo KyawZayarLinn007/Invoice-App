@@ -11,7 +11,7 @@ import Box from '@mui/material/Box';
 
 const App = () => {
   const [cartItems, setCartItems] = React.useState([]);
-  const [items, setItems] = React.useState(null);
+  const [items, setItems] = React.useState([]);
 
   return ( 
     <div>

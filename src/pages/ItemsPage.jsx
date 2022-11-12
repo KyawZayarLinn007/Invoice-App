@@ -25,6 +25,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase-config.js";
+import { CSVLink } from "react-csv";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -143,6 +144,21 @@ export default function ItemsPage({items, setItems, cartItems, setCartItems}) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const itemsCollectionRef = collection(db, "items");
 
+
+  // csv options
+  let headers = [
+    {label: "id", key: "id"},
+    {label: "name", key: "name"},
+    {label: "code", key: "code"},
+    {label: "price", key: "price"},
+  ];
+
+  let csvReport = {
+    filename: "items-report.csv",
+    headers,
+    data: items
+  }
+
   React.useEffect(() => {
     const getItems = async () => {
       const data = await getDocs(itemsCollectionRef);
@@ -222,13 +238,15 @@ export default function ItemsPage({items, setItems, cartItems, setCartItems}) {
         justifyContent="end"
         sx={{ marginLeft: "10%", marginRight: "10%", marginBottom: "20px" }}
       >
-        <Button
-          variant="contained"
-          color="success"
-          endIcon={<FileUploadIcon />}
-        >
-          Export CSV
-        </Button>
+        <CSVLink {...csvReport}>
+          <Button
+            variant="contained"
+            color="success"
+            endIcon={<FileUploadIcon />}
+          >
+            Export CSV
+          </Button>
+        </CSVLink>
       </Stack>
       <Stack
         direction="row"
