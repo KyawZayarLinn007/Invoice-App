@@ -156,8 +156,12 @@ export default function ItemsPage({items, setItems, cartItems, setCartItems}) {
   console.log(cartItems);
 
   const handleAddCart = (id) => {
-    if(!cartItems.includes(id)){
-        setCartItems([...cartItems, id]);
+    let cartIds = cartItems.map(item => item.id);
+    let filtered_item = items.find(item => item.id == id);
+    filtered_item.qty = 1;
+
+    if(!cartIds.includes(id)){
+        setCartItems([...cartItems, filtered_item]);
     }
   }
 

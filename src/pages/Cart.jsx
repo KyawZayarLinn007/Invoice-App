@@ -9,19 +9,10 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Link } from "react-router-dom";
 
 const Cart = ({ cartItems, items }) => {
-  let cartItemDetails = [];
 
-  if (cartItems.length > 0) {
-    if (cartItems.length == 1) {
-      cartItemDetails = items.filter((item) => item.id == cartItems[0]);
-    } else if (cartItems.length > 1) {
-      for (let i = 0; i < cartItems.length; i++) {
-        cartItemDetails.push(items.filter((item) => item.id == cartItems[i])[0]);
-      }
-    }
-  }
-
-  console.log(cartItemDetails);
+  console.log(cartItems.reduce((pre, curr) => {
+    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
+  }, 0));
 
   return (
     // wrapper stack
@@ -29,12 +20,12 @@ const Cart = ({ cartItems, items }) => {
       <Grid container spacing={12} sx={{ width: "80%" }}>
         {/* items grid */}
         <Grid item xs={12} md={7}>
-          {cartItemDetails.length <= 0 ? (
+          {cartItems.length <= 0 ? (
             <Typography variant="h5">
               You have no items in your cart!
             </Typography>
           ) : (
-            cartItemDetails.map((item) => (
+            cartItems.map((item) => (
               <Stack
                 direction="row"
                 justifyContent="space-between"
@@ -53,7 +44,7 @@ const Cart = ({ cartItems, items }) => {
                     >
                       <RemoveCircleOutlineIcon />
                     </IconButton>
-                    <Typography variant="body1">1</Typography>
+                    <Typography variant="body1">{item.qty}</Typography>
                     <IconButton aria-label="add" color="warning" size="small">
                       <AddCircleOutlineIcon />
                     </IconButton>
@@ -105,7 +96,14 @@ const Cart = ({ cartItems, items }) => {
               sx={{ marginBottom: "20px" }}
             >
               <Typography variant="h6">Subtotal</Typography>
-              <Typography variant="h6">0 mmks</Typography>
+              <Typography variant="h6">
+                {
+                  cartItems.length > 1 ? (cartItems.reduce((pre, curr) => {
+                    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
+                  }) || 0) : (cartItems.length == 1 && cartItems.reduce((pre, curr) => {
+                    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
+                  }, {price: 0, qty: 0}) || 0)
+                } mmks </Typography>
             </Stack>
             <Stack
               direction="row"
@@ -121,7 +119,14 @@ const Cart = ({ cartItems, items }) => {
               sx={{ marginBottom: "20px" }}
             >
               <Typography variant="h6">Total</Typography>
-              <Typography variant="h6">0 mmks</Typography>
+              <Typography variant="h6">
+              {
+                  cartItems.length > 1 ? (cartItems.reduce((pre, curr) => {
+                    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
+                  }) || 0) : (cartItems.length == 1 && cartItems.reduce((pre, curr) => {
+                    return (pre?.price * pre?.qty) + (curr?.price * curr?.qty);
+                  }, {price: 0, qty: 0}) || 0)
+                } mmks </Typography>
             </Stack>
             <Stack
               direction="row"
