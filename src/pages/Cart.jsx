@@ -103,7 +103,7 @@ const Cart = ({ cartItems, setCartItems }) => {
             className="checkout-form"
             sx={{
               width: "100%",
-              backgroundColor: "#25c02d",
+              backgroundColor: "#31a737",
               padding: "20px",
               borderRadius: "0.3rem",
               color: "white",
