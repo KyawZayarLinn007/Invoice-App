@@ -60,28 +60,40 @@ const InvoiceEdit = ({ items, setItems }) => {
       let snap = await getDoc(doc(db, "invoices", invoice_id));
       if (snap.exists()) {
         setFetchedInvoice({ ...snap.data(), id: snap.id });
-        console.log(`The fetch invoice inside effect is`, fetchedInvoice);
-        let new_item = [];
+      }
+    };
+    getData();
+  }, []);
+  
+  //fetch invoice items
+  React.useEffect(() => {
+    const getData = async () => {
+        let new_items = [];
         for (let i = 0; i < fetchedInvoice?.items?.length; i++) {
           console.log("inside the loop");
           let item = await getDoc(doc(db, "items", fetchedInvoice?.items[i]));
           console.log(`The snap is`, item);
           if (item.exists()) {
-            new_item.push({
+            new_items.push({
               ...item.data(),
               id: item.id,
               qty: fetchedInvoice?.qtys[i],
-              total: item?.price * fetchedInvoice?.qtys[i],
+              total: item?.data().price * fetchedInvoice?.qtys[i],
             });
           }
         }
-        setSelectedItems(new_item);
-      }
+        setSelectedItems(new_items);
+        let updatedFetchSelectItems = fetchSelectItems;
+        let new_item_ids = new_items.map(item => item.id);
+        for(let i in new_item_ids){
+          updatedFetchSelectItems = updatedFetchSelectItems.filter(item => item.id !== new_item_ids[i]);
+        }
+
+        setFetchSelectItems(updatedFetchSelectItems);
     };
     getData();
-  }, []);
+  }, [fetchedInvoice]);
 
-  
 
   // select item field onchange
   const handleChange = (event) => {
