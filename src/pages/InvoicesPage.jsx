@@ -35,6 +35,7 @@ import {
 import { db } from "../firebase/firebase-config.js";
 import { CSVLink } from "react-csv";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -158,6 +159,8 @@ export default function InvoicesPage({ invoices, setInvoices }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const invoicesCollectionRef = collection(db, "invoices");
 
+  let navigate = useNavigate();
+
   //delete open state
   const [dopen, setDOpen] = React.useState(false);
 
@@ -179,6 +182,10 @@ export default function InvoicesPage({ invoices, setInvoices }) {
     headers,
     data: invoices,
   };
+
+  const handleEditBtn = (id) => {
+    navigate(`/update/${id}`);
+  }
 
   const handleDeleteInvoice = () => {
     const deleteInvoice = async (id) => {
@@ -360,7 +367,7 @@ export default function InvoicesPage({ invoices, setInvoices }) {
                           <TableCell align="right">{invoice.tax}</TableCell>
                           <TableCell align="right">{invoice.total}</TableCell>
                           <TableCell align="right">
-                            <IconButton color="success">
+                            <IconButton color="success" onClick={() => handleEditBtn(invoice.id)}>
                               <EditIcon />
                             </IconButton>
                             <IconButton
