@@ -20,6 +20,7 @@ import produce from "immer";
 import { v4 as uuidv4 } from "uuid";
 import {
   collection,
+  getDoc,
   getDocs,
   addDoc,
   updateDoc,
@@ -28,15 +29,20 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase/firebase-config.js";
 import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-const InvoiceForm = ({ items, setItems }) => {
+const InvoiceEdit = ({ items, setItems }) => {
   const invoicesCollectionRef = collection(db, "invoices");
   let navigate = useNavigate();
+  let { invoice_id } = useParams();
 
   // select item field state
   const [selectItem, setSelectItem] = React.useState("");
   //tax field state
   const [tax, setTax] = React.useState(0);
+
+  //invoice state
+  const [fetchedInvoice, setFetchedInvoice] = React.useState({});
 
   //selected items state
   const [selectedItems, setSelectedItems] = React.useState([]);
@@ -46,6 +52,36 @@ const InvoiceForm = ({ items, setItems }) => {
 
   console.log(`The selected items is`, selectedItems);
   console.log(`The select option is`, fetchSelectItems);
+  console.log(`The fetched invoice is`, fetchedInvoice);
+
+  // fetch invoice data
+  React.useEffect(() => {
+    const getData = async () => {
+      let snap = await getDoc(doc(db, "invoices", invoice_id));
+      if (snap.exists()) {
+        setFetchedInvoice({ ...snap.data(), id: snap.id });
+        console.log(`The fetch invoice inside effect is`, fetchedInvoice);
+        let new_item = [];
+        for (let i = 0; i < fetchedInvoice?.items?.length; i++) {
+          console.log("inside the loop");
+          let item = await getDoc(doc(db, "items", fetchedInvoice?.items[i]));
+          console.log(`The snap is`, item);
+          if (item.exists()) {
+            new_item.push({
+              ...item.data(),
+              id: item.id,
+              qty: fetchedInvoice?.qtys[i],
+              total: item?.price * fetchedInvoice?.qtys[i],
+            });
+          }
+        }
+        setSelectedItems(new_item);
+      }
+    };
+    getData();
+  }, []);
+
+  
 
   // select item field onchange
   const handleChange = (event) => {
@@ -127,22 +163,21 @@ const InvoiceForm = ({ items, setItems }) => {
     let qtys = [];
     document.querySelectorAll("#selected-item-qty").forEach((item) => {
       console.log(item);
-      qtys.push(Number(item.value));
+      qtys.push(item.value);
     });
 
     let data = {
       name,
       tax: Number(tax_value),
       total: Number(total),
-      items: item_ids,
+      tems: item_ids,
       qtys,
     };
 
-    addDoc(invoicesCollectionRef, data)
-    .then(data => {
+    addDoc(invoicesCollectionRef, data).then((data) => {
       navigate("/invoices");
-    })
-    
+    });
+
     console.log(total, name, tax_value, item_ids, qtys);
   };
 
@@ -354,4 +389,4 @@ const InvoiceForm = ({ items, setItems }) => {
   );
 };
 
-export default InvoiceForm;
+export default InvoiceEdit;

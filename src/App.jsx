@@ -5,9 +5,11 @@ import { Route, Routes } from "react-router-dom";
 import ItemsPage from "./pages/ItemsPage";
 import InvoicesPage from "./pages/InvoicesPage";
 import InvoiceForm from "./pages/InvoiceForm";
+import InvoiceEdit from "./pages/InvoiceEdit";
 import Cart from "./pages/Cart";
 import Order from "./pages/Order";
 import Box from '@mui/material/Box';
+
 
 const App = () => {
   const [cartItems, setCartItems] = React.useState([]);
@@ -26,6 +28,7 @@ const App = () => {
         <Route path="/items" element={<ItemsPage items={items} setItems={setItems} cartItems={cartItems} setCartItems={setCartItems} />} />
         <Route path="/invoices" element={<InvoicesPage invoices={invoices} setInvoices={setInvoices} />} />
         <Route path="/create" element={<InvoiceForm items={items} setItems={setItems} />} />
+        <Route path="/update/:invoice_id" element={<InvoiceEdit items={items} setItems={setItems} />} />
         <Route path="/cart" element={<Cart cartItems={cartItems} setCartItems={setCartItems} items={items} />} />
         <Route path="/order" element={<Order />} />
       </Routes>
