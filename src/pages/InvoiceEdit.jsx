@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Select from "@mui/material/Select";
@@ -40,6 +41,8 @@ const InvoiceEdit = ({ items, setItems }) => {
   const [selectItem, setSelectItem] = React.useState("");
   //tax field state
   const [tax, setTax] = React.useState(0);
+  //invoice name state
+  const [name, setName] = React.useState("");
 
   //invoice state
   const [fetchedInvoice, setFetchedInvoice] = React.useState({});
@@ -64,36 +67,39 @@ const InvoiceEdit = ({ items, setItems }) => {
     };
     getData();
   }, []);
-  
+
   //fetch invoice items
   React.useEffect(() => {
     const getData = async () => {
-        let new_items = [];
-        for (let i = 0; i < fetchedInvoice?.items?.length; i++) {
-          console.log("inside the loop");
-          let item = await getDoc(doc(db, "items", fetchedInvoice?.items[i]));
-          console.log(`The snap is`, item);
-          if (item.exists()) {
-            new_items.push({
-              ...item.data(),
-              id: item.id,
-              qty: fetchedInvoice?.qtys[i],
-              total: item?.data().price * fetchedInvoice?.qtys[i],
-            });
-          }
+      let new_items = [];
+      for (let i = 0; i < fetchedInvoice?.items?.length; i++) {
+        console.log("inside the loop");
+        let item = await getDoc(doc(db, "items", fetchedInvoice?.items[i]));
+        console.log(`The snap is`, item);
+        if (item.exists()) {
+          new_items.push({
+            ...item.data(),
+            id: item.id,
+            qty: fetchedInvoice?.qtys[i],
+            total: item?.data().price * fetchedInvoice?.qtys[i],
+          });
         }
-        setSelectedItems(new_items);
-        let updatedFetchSelectItems = fetchSelectItems;
-        let new_item_ids = new_items.map(item => item.id);
-        for(let i in new_item_ids){
-          updatedFetchSelectItems = updatedFetchSelectItems.filter(item => item.id !== new_item_ids[i]);
-        }
+      }
+      setSelectedItems(new_items);
+      let updatedFetchSelectItems = fetchSelectItems;
+      let new_item_ids = new_items.map((item) => item.id);
+      for (let i in new_item_ids) {
+        updatedFetchSelectItems = updatedFetchSelectItems.filter(
+          (item) => item.id !== new_item_ids[i]
+        );
+      }
 
-        setFetchSelectItems(updatedFetchSelectItems);
+      setFetchSelectItems(updatedFetchSelectItems);
+      setName(fetchedInvoice.name);
+      setTax(fetchedInvoice.tax);
     };
     getData();
   }, [fetchedInvoice]);
-
 
   // select item field onchange
   const handleChange = (event) => {
@@ -103,6 +109,11 @@ const InvoiceEdit = ({ items, setItems }) => {
   // tax field onchange
   const handleTaxChange = (event) => {
     setTax(event.target.value);
+  };
+
+  // name field onchange
+  const handleNameChange = (event) => {
+    setName(event.target.value);
   };
 
   const handleOptionAdd = () => {
@@ -160,8 +171,8 @@ const InvoiceEdit = ({ items, setItems }) => {
     setSelectedItems(filteredSelectedItems);
   };
 
-  const handleCreateInvoice = () => {
-    let name = document.querySelector("#invoice-name").value || uuidv4();
+  const handleUpdateInvoice = () => {
+    let name_value = name || uuidv4();
     let total = document.querySelector("#selected-item-total").dataset
       .selectedTotal;
     let tax_value = tax || 0;
@@ -179,16 +190,18 @@ const InvoiceEdit = ({ items, setItems }) => {
     });
 
     let data = {
-      name,
+      name: name_value,
       tax: Number(tax_value),
       total: Number(total),
-      tems: item_ids,
+      items: item_ids,
       qtys,
     };
 
-    addDoc(invoicesCollectionRef, data).then((data) => {
-      navigate("/invoices");
-    });
+    
+      const invoiceDoc = doc(db, "invoices", invoice_id);
+      const newFields = data;
+      updateDoc(invoiceDoc, newFields)
+      .then(res => navigate("/invoices"));
 
     console.log(total, name, tax_value, item_ids, qtys);
   };
@@ -217,7 +230,8 @@ const InvoiceEdit = ({ items, setItems }) => {
                 <TextField
                   id="invoice-name"
                   color="success"
-                  label="Invoice Name"
+                  value={name}
+                  onChange={handleNameChange}
                   variant="standard"
                   helperText="Optional"
                   sx={{ width: "30%", marginBottom: "40px" }}
@@ -386,11 +400,11 @@ const InvoiceEdit = ({ items, setItems }) => {
                 </Link>
                 <Button
                   variant="contained"
-                  endIcon={<AddIcon />}
+                  endIcon={<EditIcon />}
                   color="success"
-                  onClick={handleCreateInvoice}
+                  onClick={handleUpdateInvoice}
                 >
-                  Create
+                  Update
                 </Button>
               </Stack>
             </Grid>
