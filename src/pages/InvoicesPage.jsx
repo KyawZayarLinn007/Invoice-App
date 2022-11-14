@@ -223,7 +223,7 @@ export default function InvoicesPage({ invoices, setInvoices }) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.name);
+      const newSelected = invoices.map((n) => n.name);
       setSelected(newSelected);
       return;
     }
@@ -263,7 +263,7 @@ export default function InvoicesPage({ invoices, setInvoices }) {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - invoices.length) : 0;
 
   const handleClickDeleteOpen = (id) => {
     setDOpen(true);
